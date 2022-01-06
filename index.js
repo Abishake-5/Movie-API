@@ -1,32 +1,66 @@
-const express = require('express');
+const morgan = require('morgan');
+const express = require('express')
 const app = express();
 
-let topBooks = [
+ app.use(morgan('common'));
+
+let topMovies = [
   {
-    title: 'Harry Potter and the Sorcerer\'s Stone',
-    author: 'J.K. Rowling'
+    title: 'The Lion King',
+    year:'2019'
   },
   {
-    title: 'Lord of the Rings',
-    author: 'J.R.R. Tolkien'
+    title: 'Sing',
+    year:'2019'
   },
   {
-    title: 'Twilight',
-    author: 'Stephanie Meyer'
+    title: 'Sing 2 ',
+    year: '2021'
+  },
+    {
+    title: 'Encanto',
+    year: '2021'
+  },
+    {
+    title: 'Spider man no way home',
+    year: '2021'
+  },
+    {
+    title: 'Avengers End Game',
+    year: '2019'
+  },
+    {
+    title: 'naruto last movie',
+    year: '2014'
+  },
+    {
+    title: 'Demon Slayer: Mugen Train',
+    year: '2020'
+  },
+    {
+    title: 'Mr peabody and sherman',
+    year: '2014'
+  },
+    {
+    title: 'coco',
+    year: '2017'
   }
 ];
 
 // GET requests
 app.get('/', (req, res) => {
-  res.send('Welcome to my book club!');
+    res.send('My Movie app');
+
 });
 
-app.get('/documentation', (req, res) => {                  
-  res.sendFile('public/documentation.html', { root: __dirname });
+app.get('/movies', (req, res) => {
+  res.json(topMovies);
 });
 
-app.get('/books', (req, res) => {
-  res.json(topBooks);
+app.use(express.static('public'));
+app.use(function(req, res, err){
+  console.log(err)
+  res.status(500).send('Something Broke!')
 });
 
 
