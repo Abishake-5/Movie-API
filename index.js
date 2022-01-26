@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const Models = require('./models');
 const Movie = Models.Movie;
 const User = Models.User;
+const { check, validationResult } = require('express-validator');
 
 mongoose.connect('mongodb://localhost:27017/myFlixDB', { useNewUrlParser: true, useUnifiedTopology: true });
 app.use(express.json());
@@ -15,6 +16,8 @@ app.use(express.urlencoded({ extended: false}));
 app.use(morgan('common'));
 // logger that console logs date, time and method used
 app.use(bodyParser.urlencoded({ extended: true }));
+const cors = require('cors');
+app.use(cors());
 let auth = require('./auth')(app);
 const passport = require('passport');
 require('./passport');
@@ -64,7 +67,19 @@ app.get('/directorName/:name',  passport.authenticate('jwt',{ session: false}),(
     console.error(err);
   })
 });
-app.post('/users', passport.authenticate('jwt',{ session: false}), (req, res) => {
+app.post('/users', passport.authenticate('jwt',{ session: false}), [check('Username', 'Username is required').isLength({min:5}),
+check('Username','Username contains non alphanumeric characters - not allowed').isAlphanumeric(),
+check('Password', 'Password is required').not().isEmpty(),
+check('Email', 'Email does not appear to be valid').isEmail()
+// "check" is an express-validator middleware that valiates what info is being sent to the server.
+],(req, res) => {
+let errors = validationResult(req);
+if (!errors.isEmpty()){
+return res.status(422).json({ errors: errors.array()})
+// Still part of the Express-validator middleware that returns an error if the returned data from the user doesn't meet the required format
+}
+
+let hashPassword = User.hasPassword(req.body.Password);
   User.findOne({ userName: req.body.Name })
     .then((user) => {
       if (user) {
@@ -147,6 +162,7 @@ app.get('/users/:name',  passport.authenticate('jwt',{ session: false}),(req, re
 
 })
 // listen for requests
-app.listen(8080,()=>{
-  console.log('Listening to port 8080')
-});
+const port = process.env.PORT || 8080;
+app.listen(port, '0.0.0.0', ()=>{
+  console.log('Listenning on Port' + port)
+})
