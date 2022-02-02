@@ -10,9 +10,12 @@ ExtractJWT = passportJWT.ExtractJwt;
 passport.use(new LocalStrategy({
     usernameField: 'userName',
     passwordField: 'Password'
+    // This is where username and password is entered
 },(userName, password, callback) =>{
+    // it's then sent as a param to check for validation
     console.log(userName + ' ' + password);
     Users.findOne({userName: userName }, (error, user)=>{
+        // the above code is looking to match the username with the username in db
         if (error){
             console.log(error);
             return callback(error);

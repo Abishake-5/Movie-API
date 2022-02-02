@@ -4,3 +4,4 @@ mongoDB
 Mongoose
 postgreSQL
 json web token
+.env
