@@ -75,10 +75,10 @@ app.get('/directorName/:name',  passport.authenticate('jwt',{ session: false}),(
   })
 });
 app.post('/users',
-[check('userName', 'Username is required').isLength({min:5}),
-check('userName','Username contains non alphanumeric characters - not allowed').isAlphanumeric(),
+[check('Username', 'Username is required').isLength({min:5}),
+check('Username','Username contains non alphanumeric characters - not allowed').isAlphanumeric(),
 check('Password', 'Password is required').not().isEmpty(),
-check('Email', 'Email does not appear to be valid').isEmail()
+check('Email', 'Email does not appear to be valid.').isEmail()
 // "check" is an express-validator middleware that valiates what info is being sent to the server.
 ],
 (req, res) => {
@@ -88,13 +88,13 @@ return res.status(422).json({ errors: errors.array()})
 // Still part of the Express-validator middleware that returns an error if the returned data from the user doesn't meet the required format
 }
 let hashPassword = User.hashPassword(req.body.Password);
-  User.findOne({ userName: req.body.userName })
+  User.findOne({ Username: req.body.Username })
     .then((user) => {
       if (user) {
-        return res.status(400).send(req.body.userName + ' Already exists');
+        return res.status(400).send(req.body.Username + ' Already exists');
       } else {
         User.create({
-            userName: req.body.userName,
+            Username: req.body.Username,
             Password: hashPassword,
             Email: req.body.Email,
             BirthDay: req.body.BirthDay
@@ -112,8 +112,8 @@ let hashPassword = User.hashPassword(req.body.Password);
     });
 });
 app.put('/users/:name',  passport.authenticate('jwt',{ session: false}),(req, res)=> {
-  User.findOneAndUpdate({userName: req.params.userName}, {$set:{
-    userName: req.body.userName,
+  User.findOneAndUpdate({Username: req.params.Username}, {$set:{
+    Username: req.body.Username,
     Password: req.body.Password,
     Email: req.body.Email,
     BirthDay: req.body.BirthDay
@@ -126,7 +126,7 @@ app.put('/users/:name',  passport.authenticate('jwt',{ session: false}),(req, re
   })
 });
 app.delete('/users/:name',  passport.authenticate('jwt',{ session: false}),(req, res)=> {
- User.findOneAndRemove({userName: req.params.name})
+ User.findOneAndRemove({Username: req.params.name})
  .then((user)=>{
    if (!user){
      res.status(400).send(req.params.name + 'was not found');
@@ -138,7 +138,7 @@ app.delete('/users/:name',  passport.authenticate('jwt',{ session: false}),(req,
  })
 });
 app.post('/users/:name/:title',  passport.authenticate('jwt',{ session: false}),(req, res)=> {
-User.findOneAndUpdate({userName: req.params.name}, {$push:{FavMovies: req.params.title}}, {new: true},
+User.findOneAndUpdate({Username: req.params.name}, {$push:{FavMovies: req.params.title}}, {new: true},
   (err, updateFavMovies)=>{
     if (err){
       res.status(500).send(err + ' Error');
@@ -149,7 +149,7 @@ User.findOneAndUpdate({userName: req.params.name}, {$push:{FavMovies: req.params
   })
 });
 app.delete('/users/:name/:title', passport.authenticate('jwt',{ session: false}), (req, res)=> {
- User.findOneAndUpdate({userName: req.params.name},{$pull: {FavMovies: req.params.title}},{new: true}, (err, updateFavMovies) =>{
+ User.findOneAndUpdate({Username: req.params.name},{$pull: {FavMovies: req.params.title}},{new: true}, (err, updateFavMovies) =>{
    if (err){
      res.send(err)
    }else{
@@ -159,7 +159,7 @@ app.delete('/users/:name/:title', passport.authenticate('jwt',{ session: false})
 
 });
 app.get('/users/:name',  passport.authenticate('jwt',{ session: false}),(req, res) =>{
-     User.findOne({'userName': req.params.name})
+     User.findOne({'Username': req.params.name})
     .then((user) => {
         res.json(user.FavMovies);
     })
