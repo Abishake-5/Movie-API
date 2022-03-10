@@ -8,21 +8,21 @@ JWTStrategy = passportJWT.Strategy,
 ExtractJWT = passportJWT.ExtractJwt;
 
 passport.use(new LocalStrategy({
-    usernameField: 'userName',
+    UsernameField: 'Username',
     passwordField: 'Password'
-    // This is where username and password is entered
-},(userName, password, callback) =>{
+    // This is where Username and password is entered
+},(Username, password, callback) =>{
     // it's then sent as a param to check for validation
-    console.log(userName + ' ' + password);
-    Users.findOne({userName: userName }, (error, user)=>{
-        // the above code is looking to match the username with the username in db
+    console.log(Username + ' ' + password);
+    Users.findOne({Username: Username }, (error, user)=>{
+        // the above code is looking to match the Username with the Username in db
         if (error){
             console.log(error);
             return callback(error);
         }
         if (!user) {
             console.log('incorrect Username');
-            return callback(null, false, {message: 'Incorrect username or password.'});
+            return callback(null, false, {message: 'Incorrect Username or password.'});
         }
          if (!user.validatePassword(password)) {
       console.log('incorrect password');
